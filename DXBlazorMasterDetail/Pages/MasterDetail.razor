@@ -1,0 +1,106 @@
+﻿@page "/MasterDetail"
+@using DevExpress.Blazor
+@using DXBlazorMasterDetail.Data
+@using Microsoft.AspNetCore.Components
+
+@inject  NavigationManager navigationManager
+@inject AdventureWorksService adventureWorksService
+
+
+<h3>Master Detail Detail Grid</h3>
+
+
+@if (Customers != null)
+{
+    <DxDataGrid @ref="@grid"
+                Data="@Customers"
+                AutoCollapseDetailRow="true"
+                ShowFilterRow="true"
+                SelectionMode="DataGridSelectionMode.None"
+                PageSize="20"
+                ShowGroupPanel="true">
+        <ChildContent>
+            <DxDataGridColumn Field="@nameof(Customer.FirstName)" AllowSort="@DefaultBoolean.True" Caption="Customer First Name"/>
+            <DxDataGridColumn Field="@nameof(Customer.LastName)" AllowSort="@DefaultBoolean.True" Caption="Customer Last Name"/>
+            <DxDataGridColumn Field="@nameof(Customer.Phone)" AllowSort="@DefaultBoolean.True" />
+            <DxDataGridColumn Field="@nameof(Customer.EmailAddress)" AllowSort="@DefaultBoolean.True" />
+            <DxDataGridColumn Field="@nameof(Customer.City)" AllowSort="@DefaultBoolean.True" />
+            <DxDataGridColumn Field="@nameof(Customer.State)" AllowSort="@DefaultBoolean.True" />
+        </ChildContent>
+        <DetailRowTemplate Context="Customer">
+
+            @if (Orders != null)
+                {
+                <DxDataGrid Data="@Orders.Where(x => x.CustomerID == Customer.CustomerID)"
+                            SelectionMode="DataGridSelectionMode.None"
+                            ShowFilterRow="false">
+                    <ChildContent>
+                        <DxDataGridColumn Field="@nameof(Order.SalesOrderNumber)" />
+                        <DxDataGridDateEditColumn Field="@nameof(Order.OrderDate)" DisplayFormatString="d" Caption="Order Date" />
+                        <DxDataGridSpinEditColumn Field="@nameof(Order.SubTotal)" DisplayFormatString="c" />
+                        <DxDataGridSpinEditColumn Field="@nameof(Order.TaxAmt)" DisplayFormatString="C" Caption="Tax Amt" />
+                        <DxDataGridSpinEditColumn Field="@nameof(Order.Freight)" DisplayFormatString="c" />
+                        <DxDataGridSpinEditColumn Field="@nameof(Order.TotalDue)" DisplayFormatString="c" Caption="Total Due" />
+                    </ChildContent>
+                    <DetailRowTemplate Context="OrderContext">
+                        @if (OrderDetail != null)
+                            {
+                            <DxDataGrid Data="@OrderDetail.Where(x => x.SalesOrderID == OrderContext.SalesOrderID)"
+                                        SelectionMode="DataGridSelectionMode.None"
+                                        ShowFilterRow="false">
+
+                                <DxDataGridColumn Field="@nameof(ProductOrderLine.Name)" Caption="Product Name" />
+                                <DxDataGridColumn Field="@nameof(ProductOrderLine.ThumbnailPhotoFileName)" Caption="Product Image">
+                                    <DisplayTemplate>
+                                        @{
+                                            var orderLine = context as ProductOrderLine;
+
+                                            var imagePath = navigationManager.BaseUri + "/images/" + orderLine.ThumbnailPhotoFileName;
+                                            <img src="@imagePath" />
+                                        }
+                                    </DisplayTemplate>
+                                </DxDataGridColumn>
+                                <DxDataGridDateEditColumn Field="@nameof(ProductOrderLine.CategoryName)" />
+                                <DxDataGridSpinEditColumn Field="@nameof(ProductOrderLine.OrderQty)" />
+                                <DxDataGridSpinEditColumn Field="@nameof(ProductOrderLine.UnitPrice)" DisplayFormatString="C" />
+                                <DxDataGridSpinEditColumn Field="@nameof(ProductOrderLine.LineTotal)" DisplayFormatString="c" />
+
+                            </DxDataGrid>
+                            }
+                            else
+                            {
+                            <em>Loading Order Detail...</em>
+                            }
+                    
+                    </DetailRowTemplate>
+                </DxDataGrid>
+                }
+                else
+                {
+                <em>Loading Sales...</em>
+                }
+            
+        </DetailRowTemplate>
+    </DxDataGrid>
+}
+else
+{
+    <em>Loading...</em>
+}
+
+
+@code {
+
+    List<Customer> Customers;
+    List<Order> Orders;
+    List<ProductOrderLine> OrderDetail;
+    DxDataGrid<Customer> grid;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Customers = await adventureWorksService.GetCustomers();
+        Orders = await adventureWorksService.GetOrders();
+        OrderDetail = await adventureWorksService.GetOrderDetail();
+    }
+
+}
