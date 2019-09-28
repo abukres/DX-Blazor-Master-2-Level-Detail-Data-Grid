@@ -1,5 +1,5 @@
 # DXDataGridDemo
-A demo for the DevExpress Blazor server side data grid
+A demo for the DevExpress server side Blazor side data grid
 
 * [Live Demo](http://siteauditor.net/dxdatagriddemo/MasterDetail)
 
