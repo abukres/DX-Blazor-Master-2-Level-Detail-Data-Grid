@@ -1,7 +1,7 @@
 # DXDataGridDemo
 A demo for the DevExpress server side Blazor side data grid
 
-* [Live Demo](http://siteauditor.net/dxdatagriddemo/MasterDetail). (ctrl-shift to sort by multiple columns)
+* [Live Demo](http://siteauditor.net/dxdatagriddemo/MasterDetail). 
 
 * This is a self contained demo (No database setup. SQLite is being used) and it's ready to run except for getting DevExpress' Blazor package. To get it, open an account at DevExpress and go to [nuget.devexpress.com](https://nuget.devexpress.com), log in as a registered DevExpress customer and click **Obtain Feed URL**. Add the feed URL as a nuget source in Visual Studio, under Tools -> Options -> Nuget Package Manager -> Packages Sources and make sure the checkbox is checked. 
 
